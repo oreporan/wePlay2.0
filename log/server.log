@@ -1,0 +1,2 @@
+[INFO][Sun Aug 09 2015 15:25:52 GMT+0300 (IDT)][server.main] Listening on port: 8080
+[INFO][Sun Aug 09 2015 15:26:00 GMT+0300 (IDT)][server.use] GET. New Request from: localhost routing to: /users/

@@ -11,9 +11,13 @@ var db = require('./db').connect();
 var bodyParser = require('body-parser');
 var messageBuilder = require('./messages');
 var constants = require('./Constants');
-
+var config = require('./config');
 // Init the logger
-var logger = require('./logger').init('server');
+var logger = require('./logger');
+
+// Since server has just started - we create a new logger file
+logger.initFile();
+logger = logger.init('server');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -27,8 +31,8 @@ var port = process.env.PORT || 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
 
 // This route is used to login, we don't want the filter to authenticate this path so we place it above the filter
-router.route(constants.PATH_AUTHENTICATE)
-	.post(config.authenticateUser);
+// router.route(constants.PATH_AUTHENTICATE)
+// 	.post(config.authenticateUser);
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
@@ -51,7 +55,7 @@ router.route(constants.PATH_USERS_USERID)
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /
-app.use('/', router);
+app.use('/wePlay', router);
 
 // START THE SERVER
 // =============================================================================

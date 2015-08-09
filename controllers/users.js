@@ -1,7 +1,7 @@
 
 var messages = require('../messages').users;
 // This class holds all the methods for users
-var User = require('../models/User');
+var User = require('../models/Schemas').User;
 
 // Init the logger
 var logger = require('../logger').init('users');
