@@ -31,8 +31,7 @@ function buildRootMessage ( className , methodName) {
 function writeLogToFile(message) {
 	var stream = fs.createWriteStream( SERVER_LOG_PATH, {'flags': 'a'} );
 	stream.once('open', function(fd) {
-		stream.write(message);
-		stream.write('\n');
+		stream.write(message + '\n');
 	});
 };
 

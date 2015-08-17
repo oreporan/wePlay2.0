@@ -14,6 +14,20 @@ var UserSchema   = new Schema({
 module.exports.User = mongoose.model('User', UserSchema);
 
 
+// Player
+
+var mongoose     = require('mongoose');
+var Schema       = mongoose.Schema;
+
+var PlayerSchema   = new Schema({
+    user : {type: UserSchema , required: true},
+    date: { type: Date, default: Date.now },
+    rating : {type: String , default : Constants.RATING_A}
+});
+
+module.exports.Player = mongoose.model('Player', PlayerSchema);
+
+
 // Game
 
 var mongoose     = require('mongoose');
@@ -21,7 +35,7 @@ var Schema       = mongoose.Schema;
 
 var GameSchema   = new Schema({
     LeagueId : {type : String, required: true},
- //   users : [{ type : UserSchema , min: 2 , max : 25 }],
+    users : [UserSchema],
     dateCreated: { type: Date, default: Date.now },
     teamA : [UserSchema],
     teamB : [UserSchema],
@@ -41,9 +55,11 @@ var LeagueSchema   = new Schema({
     name: {type : String, required : true },
     _id: {type : String, required : true },
     users: [UserSchema],
+    admin : {type : UserSchema, required : true },
     dateCreated: { type: Date, default: Date.now },
     startDate: { type: Date, default: Date.now },
     endDate: {type: Date, default: Date.now},
+    frequency : {type: String, required: true, default : Constants.GAME_FREQUENCY_NEVER},
     games: [GameSchema]
 
 });

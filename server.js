@@ -6,7 +6,9 @@
 // call the packages we need
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
-var users = require('./controllers/users')
+var usersEndpoint = require('./endpoints/usersEndpoint');
+var users = require('./controllers/users');
+var leagues = require('./endpoints/leagues');
 var db = require('./db').connect();
 var bodyParser = require('body-parser');
 var messageBuilder = require('./messages');
@@ -36,22 +38,34 @@ var router = express.Router();              // get an instance of the express Ro
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
-    logger.audit('use' , req.method + '. New Request from: ' + req.hostname + ' routing to: ' + req.path);
-    next(); // make sure we go to the next routes and don't stop here
+	logger.audit('use' , req.method + '. New Request from: ' + req.hostname + ' routing to: ' + req.path);
+	validateRequest(req, function( err ) {
+		if(err == null) {
+			next();
+		} else {
+			res.status(401).send({error : "Not a valid request, missing headers" , description : err });
+		}
+	});
 });
 
  // START API HERE
 
-router.route(constants.PATH_USERS)
-    .post(users.addUser)
-    .get(users.getAllUsers);
+ // Users endpoint
 
-router.route(constants.PATH_USERS_USER_NAME)
-    .get(users.getUserByName)
+router.route(constants.PATH_usersEndpoint)
+    .post(usersEndpoint.addUser)
+    .get(usersEndpoint.getAllusersEndpoint);
 
-router.route(constants.PATH_USERS_USERID)
-    .get(users.getUserById)
-    .put(users.updateUser);
+router.route(constants.PATH_usersEndpoint_USER_NAME)
+    .get(usersEndpoint.getUserByName)
+
+router.route(constants.PATH_usersEndpoint_USERID)
+    .get(usersEndpoint.getUserById)
+    .put(usersEndpoint.updateUser);
+
+
+// Leagues endpoint
+    
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /
@@ -61,3 +75,23 @@ app.use('/wePlay', router);
 // =============================================================================
 app.listen(port);
 logger.audit('main', "Listening on port: " + port);
+
+// Validate the request
+function validateRequest( req, callback ) {
+	var clientId = req.get(Constants.CLIENT_ID);
+	users.getUserById(clientId, function(result, err) {
+		if( err == null ) {
+			// No user was found
+			callback( "No Client was found in the DB, error: " + err );
+		} else {
+			// User was found
+			callback(null);
+		}
+	});
+}
+
+
+
+
+
+
